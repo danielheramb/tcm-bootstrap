@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+
+##### =========================================== #####
+#
+# TCM Developer / QA Environment Bootstrapper
+#   @author Daniel Heramb <daniel.heramb@turner.com>
+#
+# This script configures a Mac with the minimum requirements to
+# host a local instance of tcm.com.
+#
+# Usage:
+#
+# Currently Installs & Configures:
+#   * Brew
+#   * Docker
+#   * various TCM-specific items
+#
+# Assumes:
+#   1.) you already have git installed and configured
+#   2.) your git user has access to github.com/turnercode
+#   3.) you have added your public ssh key to your github account
+#   4.) you have sudo access (preferably NOPASSWD)
+#
+# Todo:
+#   * Test git config and access. Create if not there.
+#   * Automatically pull tcm-www repository
+#   * Move this to Ansible
+#   * Add PHPStorm settings to configure IDE to team standards
+#   * Install & configure other useful brew packages
+#       * PHP (php70)
+#       * XDebug (php70-xdebug)
+#       * IDE (cask phpstorm)
+#       * Composer (composer)
+#       * CodeSniffer (php-code-sniffer@2.9)
+#       * Beautifier (phpcbf)
+#       * Mess Detector (phpmd)
+#       * PHPUnit (phpunit)
+#       * MariaDB (mariadb)
+#       * AWS Console Cli (awscli)
+#       * Slack (cask slack)
+#       * SourceTree (cask sourcetree)
+#       * SequelPro (cask sequel-pro)
+#       * PostMan (cask postman)
+#
+##### =========================================== #####
+
+# Make sure we're running this on a Mac
+[[ $(uname) == 'Darwin' ]] || { echo "This only works on macOS." >&2; exit 2; }
+
+
+# Check that Homebrew is installed
+echo -n "Checking Brew..."
+which -s brew
+if [ $? != 0 ]; then
+    echo "missing!"
+    echo "Installing..."
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    echo -e "\n\n"
+    echo "done!"
+else
+    BREW=$(which brew)
+    echo "found! (${BREW})"
+    #echo "Updating..."
+    #brew update
+    #echo -e "\n\n"
+    #echo "done!"
+fi
+BREW=$(which brew)
+BREW_UPDATED=0
+echo ""
+
+
+# Checking for local PHP
+echo -n "Checking for local PHP..."
+PHPVERSION=`php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3`
+if [ ${PHPVERSION} -eq 70 ]; then
+        echo "good!"
+else
+        echo "wrong version! Installing php7.0"
+        ${BREW} install php70
+fi
+echo ""
+
+
+# Checking for local composer
+echo -n "Checking local Composer..."
+which -s composer
+if [ $? != 0 ]; then
+        echo "missing!"
+        echo -n "Installing composer..."
+        ${BREW} install composer
+        echo "done"
+else
+        echo "found!"
+fi
+echo ""
+
+# Checking for local git
+echo -n "Checking local git..."
+which -s git
+if [ $? != 0 ]; then
+        echo "missing!"
+        echo -n "Installing git..."
+        ${BREW} install git
+        echo "done."
+        echo "Please note that unless you have added your ssh keys to git, subsequent steps may fail."
+else
+        echo "found!"
+fi
+echo ""
+
+
+# Clone tcm repository
+echo -n "Checking for local TCM code..."
+REPO=git@github.com:turnercode/tcm-www.git
+PROJECTDIR=~/projects/tcm-www
+if [ -d "$PROJECTDIR" ]; then
+    echo "code already exists."
+else
+    echo "missing!"
+    echo -n "Cloning from Github..."
+    git clone ${REPO} ${PROJECTDIR}
+    echo "done!"
+fi
+echo ""
+
+# Change to the project directory
+cd ${PROJECTDIR}
+
+# Create local.env if it doesn't exist
+echo -n "Checking for local.env file..."
+if [ ! -f ./local.env ]; then
+    echo "not found."
+    echo -n "Creating template..."
+    touch ./local.env
+    echo "ODT_AUTH_KEY=REPLACE_ME" >> ./local.env
+    echo "ODT_QUEUE_PWD=REPLACE_ME" >> ./local.env
+    echo "FLOW_AUTH_KEY=REPLACE_ME" >> ./local.env
+    echo "AWS_KEY=REPLACE_ME" >> ./local.env
+    echo "AWS_SECRET=REPLACE_ME" >> ./local.env
+    echo "done!"
+    echo "Please fill in your keys/secrets and re-run ./bootstrap"
+    exit;
+else
+    echo "found!"
+fi
+echo ""
+
+# Install Acquia Dev Desktop
+echo -n "Checking for Acquia Dev Desktop..."
+if brew cask list | grep acquia-dev; then
+    echo "found!"
+else
+    echo "not found."
+    echo -n "Installing..."
+    ${BREW} cask install acquia-dev
+    echo "done."
+fi
+echo ""
+
+# Run composer update & install
+echo -n "Installing dependencies via Composer..."
+composer update && composer install
+echo "done!"
+echo ""
+
+echo "You should be able to set up Acquia to point to ${PROJECTDIR}/docroot."
+open -a "Acquia Dev Desktop"
