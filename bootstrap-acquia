@@ -145,6 +145,11 @@ composer update && composer install
 echo "done!"
 echo ""
 
-echo "You should be able to set up Acquia to point to ${PROJECTDIR}/docroot."
-echo "Don't forget to get or create a settings.local.php."
+echo "You should be able to set up Acquia from here using these settings:"
+echo ""
+echo "Click the '+' (bottom left) and choose 'Import local Drupal site'"
+echo "Local codebase folder: ${PROJECTDIR}/docroot"
+echo "Local site name: tcm"
+echo "Database: 'Start with MySQL database dump file'"
+echo "Dump file: ${PROJECTDIR}/mariadb/sql/local_tcm.sql"
 open -a "Acquia Dev Desktop"
