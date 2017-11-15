@@ -148,9 +148,6 @@ echo ""
 # Adding default hash_salt that will be overwritten during the build process
 echo -e "<?php\n\n\$settings['hash_salt'] = 'wsYcCHLJIO4u8ALw7Qz0CkLw808UzZNSyMI3TT1JJ1fSa7-spH7ehq9D3aLHk8zf9LF2uZxhbw';" >> ${PROJECTDIR}/docroot/sites/default/settings.local.php
 
-# Running drush cr
-drush --root=${PROJECTDIR}/docroot cr
-
 # Finish up
 echo "You should be able to set up Acquia from here using these settings:"
 echo ""
