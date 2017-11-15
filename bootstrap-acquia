@@ -162,6 +162,10 @@ echo "Database: 'Start with MySQL database dump file'"
 echo "Dump file: ${PROJECTDIR}/mariadb/sql/local_tcm.sql"
 echo "=========================================================="
 echo ""
-echo "If your site looks funny, run:"
-echo "export PHP_ID=php7_0; export PATH="/Applications/DevDesktop/\$PHP_ID/bin:/Applications/DevDesktop/mysql/bin:/Applications/DevDesktop/tools:\$PATH" && cd "${PROJECTDIR}/docroot" && drush --root=${PROJECTDIR}/docroot cr"
+
+echo "export PHP_ID=php7_0; export PATH=\"/Applications/DevDesktop/\$PHP_ID/bin:/Applications/DevDesktop/mysql/bin:/Applications/DevDesktop/tools:\$PATH\" && cd \"${PROJECTDIR}/docroot\" && drush --root=${PROJECTDIR}/docroot en devel tcm_containers admin_toolbar_tools -y && drush --root=${PROJECTDIR}/docroot updatedb -y && drush --root=${PROJECTDIR}/docroot updatedb --entity-updates -y && drush --root=${PROJECTDIR}/docroot cr && rm ${PROJECTDIR}/bootstrap-acquia-finish.sh" > ${PROJECTDIR}/bootstrap-acquia-finish.sh
+chmod u+x ${PROJECTDIR}/bootstrap-acquia-finish.sh
+echo "After manually setting up Acquia, run:"
+echo "${PROJECTDIR}/bootstrap-acquia-finish.sh"
+
 open -a "Acquia Dev Desktop"
