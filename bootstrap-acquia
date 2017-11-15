@@ -145,11 +145,20 @@ composer update && composer install
 echo "done!"
 echo ""
 
+# Adding default hash_salt that will be overwritten during the build process
+echo -e "<?php\n\n$settings['hash_salt'] = 'wsYcCHLJIO4u8ALw7Qz0CkLw808UzZNSyMI3TT1JJ1fSa7-spH7ehq9D3aLHk8zf9LF2uZxhbw';" >> ${PROJECTDIR}/docroot/sites/default/settings.local.php
+
+# Running drush cr
+drush --root=${PROJECTDIR}/docroot cr
+
+# Finish up
 echo "You should be able to set up Acquia from here using these settings:"
 echo ""
+echo "=========================================================="
 echo "Click the '+' (bottom left) and choose 'Import local Drupal site'"
 echo "Local codebase folder: ${PROJECTDIR}/docroot"
 echo "Local site name: tcm"
 echo "Database: 'Start with MySQL database dump file'"
 echo "Dump file: ${PROJECTDIR}/mariadb/sql/local_tcm.sql"
+echo "=========================================================="
 open -a "Acquia Dev Desktop"
