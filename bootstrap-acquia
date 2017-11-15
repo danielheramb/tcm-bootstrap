@@ -127,25 +127,6 @@ echo ""
 # Change to the project directory
 cd ${PROJECTDIR}
 
-# Create local.env if it doesn't exist
-echo -n "Checking for local.env file..."
-if [ ! -f ./local.env ]; then
-    echo "not found."
-    echo -n "Creating template..."
-    touch ./local.env
-    echo "ODT_AUTH_KEY=REPLACE_ME" >> ./local.env
-    echo "ODT_QUEUE_PWD=REPLACE_ME" >> ./local.env
-    echo "FLOW_AUTH_KEY=REPLACE_ME" >> ./local.env
-    echo "AWS_KEY=REPLACE_ME" >> ./local.env
-    echo "AWS_SECRET=REPLACE_ME" >> ./local.env
-    echo "done!"
-    echo "Please fill in your keys/secrets and re-run ./bootstrap"
-    exit;
-else
-    echo "found!"
-fi
-echo ""
-
 # Install Acquia Dev Desktop
 echo -n "Checking for Acquia Dev Desktop..."
 if brew cask list | grep acquia-dev; then
@@ -165,4 +146,5 @@ echo "done!"
 echo ""
 
 echo "You should be able to set up Acquia to point to ${PROJECTDIR}/docroot."
+echo "Don't forget to get or create a settings.local.php."
 open -a "Acquia Dev Desktop"
