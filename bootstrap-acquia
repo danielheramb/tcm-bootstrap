@@ -146,8 +146,8 @@ fi
 echo ""
 
 # Run composer update & install
-echo -n "Installing dependencies via Composer..."
-composer update && composer install
+echo -n "Installing dependencies via Composer... (this may take a few minutes...be patient!)... "
+composer update 2>&1 > /dev/null && composer 2&>1 install
 echo "done!"
 echo ""
 
@@ -167,7 +167,7 @@ echo "=========================================================="
 echo ""
 
 echo "#!/usr/bin/env bash" > ${PROJECTDIR}/bootstrap-acquia-finish.sh
-echo "export ORIGPATH=\"${PATH}\"; export PHP_ID=php7_0; export PATH=\"/Applications/DevDesktop/\$PHP_ID/bin:/Applications/DevDesktop/mysql/bin:/Applications/DevDesktop/tools:\$PATH\" && cd \"${PROJECTDIR}/docroot\" && drush --root=${PROJECTDIR}/docroot en devel tcm_containers admin_toolbar_tools -y && drush --root=${PROJECTDIR}/docroot updatedb -y && drush --root=${PROJECTDIR}/docroot updatedb --entity-updates -y && drush --root=${PROJECTDIR}/docroot cr; export PATH=\"${ORIGPATH}\"; rm ${PROJECTDIR}/bootstrap-acquia-finish.sh" >> ${PROJECTDIR}/bootstrap-acquia-finish.sh
+echo "export ORIGPATH=\"${PATH}\" && export PHP_ID=php7_0 && export PATH=\"/Applications/DevDesktop/\$PHP_ID/bin:/Applications/DevDesktop/mysql/bin:/Applications/DevDesktop/tools:\$PATH\" && cd \"${PROJECTDIR}/docroot\" && drush --root=${PROJECTDIR}/docroot en devel tcm_containers admin_toolbar_tools -y && drush --root=${PROJECTDIR}/docroot updatedb -y && drush --root=${PROJECTDIR}/docroot updatedb --entity-updates -y && drush --root=${PROJECTDIR}/docroot cr && export PATH=\"${ORIGPATH}\" && rm ${PROJECTDIR}/bootstrap-acquia-finish.sh" >> ${PROJECTDIR}/bootstrap-acquia-finish.sh
 chmod u+x ${PROJECTDIR}/bootstrap-acquia-finish.sh
 echo "After manually setting up Acquia, run:"
 echo "${PROJECTDIR}/bootstrap-acquia-finish.sh"
